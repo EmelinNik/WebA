@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+    <a-scene mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        <a-assets>
+            <!-- Видео без атрибута autoplay и с атрибутом muted для обхода ограничений автовоспроизведения в некоторых браузерах -->
+            <video id="my-video" loop="true" muted playsinline src="mov_bbb.mp4"></video>
+        </a-assets>
+        
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        
+        <a-entity mindar-image-target="targetIndex: 0">
+            <!-- Используем a-video для отображения видео -->
+            <a-video src="#my-video" position="0 0 0" height="1.6" width="0.9" rotation="0 0 0"></a-video>
+        </a-entity>
+    </a-scene>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const videoEl = document.querySelector('#my-video'); // Получаем элемент видео
+
+        const sceneEl = document.querySelector('a-scene'); // Получаем элемент сцены
+        if (sceneEl) {
+          // Ждем полной загрузки сцены
+          sceneEl.addEventListener('loaded', function () {
+            const targetEntity = sceneEl.querySelector('[mindar-image-target]'); // Находим целевой объект
+
+            // Обработчик события обнаружения метки
+            targetEntity.addEventListener('targetFound', function () {
+              videoEl.play(); // Запускаем видео
+            });
+
+            // Обработчик события потери метки
+            targetEntity.addEventListener('targetLost', function () {
+              videoEl.pause(); // Останавливаем видео
+            });
+          });
+        }
+      });
+    </script>
+</body>
+</html>
